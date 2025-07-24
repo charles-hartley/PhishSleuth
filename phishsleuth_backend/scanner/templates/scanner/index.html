@@ -1,0 +1,596 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishSleuth - AI-Powered Phishing Detector</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    
+    <!-- External CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="{% static 'scanner/css/style.css' %}">
+    
+    <!-- External JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Local JS -->
+    <script src="{% static 'scanner/js/main.js' %}" defer></script>
+    
+    <!-- Django-specific JavaScript variables -->
+    <script>
+        // Pass Django data to JavaScript
+        window.djangoData = {
+            csrfToken: '{{ csrf_token }}',
+            urls: {
+                analyzeText: '{% url "scanner:analyze_text" %}',
+                analyzeFile: '{% url "scanner:analyze_file" %}',
+                analyzeUrl: '{% url "scanner:analyze_url" %}',
+                getHistory: '{% url "scanner:get_scan_history" %}',
+                getStatistics: '{% url "scanner:get_statistics" %}',
+                downloadReportBase: '{% url "scanner:download_report" scan_id=1 %}'.replace('/1/', '/SCAN_ID/')
+            },
+            initialStats: {
+                totalScans: "{{ total_scans|default:0 }}",
+                blockedThreats: "{{ blocked_threats|default:0 }}",
+                accuracyRate: "{{ accuracy_rate|default:'99.7%' }}",
+                activeUsers: 15234
+            }
+        };
+        
+        // Helper function to generate download report URL
+        function getDownloadReportUrl(scanId) {
+            return window.djangoData.urls.downloadReportBase.replace('SCAN_ID', scanId);
+        }
+    </script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    <div class="matrix-bg">
+        <div class="matrix-rain" id="matrixRain"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'scanner:index' %}">
+                <i class="fas fa-shield-alt me-2"></i>PhishSleuth
+                <small class="text-muted" style="font-size: 0.4em; display: block;">v2.1.0 - ELITE EDITION</small>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#scanner">Scanner</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#stats">Statistics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#history">History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#api">API</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">PhishSleuth</h1>
+                    <p class="hero-subtitle">
+                        Advanced AI-powered phishing detection and analysis platform. 
+                        Deploy military-grade security intelligence to neutralize sophisticated email threats.
+                    </p>
+                    <div class="row mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ accuracy_rate|default:"99.7%" }}</div>
+                                <div class="stat-label">Accuracy</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">2.3s</div>
+                                <div class="stat-label">Avg Scan Time</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ blocked_threats|default:"847K" }}</div>
+                                <div class="stat-label">Threats Blocked</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-number">24/7</div>
+                                <div class="stat-label">Protection</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 mb-4">
+                        <button class="btn btn-primary btn-lg" onclick="scrollToScanner()">
+                            <i class="fas fa-rocket me-2"></i>Start Analysis
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" onclick="showDemo()">
+                            <i class="fas fa-play me-2"></i>View Demo
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="glass-card">
+                        <div class="terminal" id="demoTerminal">
+                            <div class="terminal-line">[root@phishsleuth ~]# Starting threat analysis...</div>
+                            <div class="terminal-line">[INFO] Loading AI models...</div>
+                            <div class="terminal-line">[INFO] Initializing NLP engine...</div>
+                            <div class="terminal-line">[SUCCESS] PhishSleuth ready for deployment</div>
+                            <div class="terminal-line">[SCAN] Analyzed {{ total_scans|default:"1,247,892" }} emails today</div>
+                            <div class="terminal-line">[BLOCK] Prevented {{ blocked_threats|default:"3,421" }} phishing attempts</div>
+                            <div class="terminal-line">[STATUS] System operational - 99.9% uptime</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scanner Section -->
+    <section class="py-5" id="scanner">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="glass-card">
+                        <h2 class="text-center mb-4">
+                            <i class="fas fa-scanner me-2"></i>THREAT ANALYSIS CONSOLE
+                            <span class="status-indicator status-safe ms-2"></span>
+                            <small class="text-muted d-block">SYSTEM READY</small>
+                        </h2>
+
+                        <!-- Enhanced Input Methods -->
+                        <div class="analysis-tabs mb-4">
+                            <button class="tab-btn active" data-tab="text">
+                                <i class="fas fa-keyboard"></i> Text Analysis
+                            </button>
+                            <button class="tab-btn" data-tab="file">
+                                <i class="fas fa-file-upload"></i> File Upload
+                            </button>
+                            <button class="tab-btn" data-tab="url">
+                                <i class="fas fa-link"></i> URL Scanner
+                            </button>
+                        </div>
+
+                        <form id="analysisForm">
+                            {% csrf_token %}
+                            
+                            <!-- Text Analysis Tab -->
+                            <div class="tab-content active" id="text-tab">
+                                <div class="mb-4">
+                                    <label for="emailSubject" class="form-label">Email Subject</label>
+                                    <input type="text" class="form-control" id="emailSubject" name="emailSubject"
+                                           placeholder="Enter suspicious email subject...">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="emailBody" class="form-label">
+                                        <i class="fas fa-envelope"></i> Email Content / Suspicious Text
+                                    </label>
+                                    <textarea class="form-control" id="emailBody" name="emailBody" rows="8" 
+                                              placeholder="Paste the suspicious email content here...
+
+Example:
+Subject: URGENT: Your account will be suspended!
+From: security@amaz0n.com
+
+Dear Customer,
+
+Your account has been compromised and will be suspended in 24 hours unless you verify your information immediately.
+
+Click here to verify: http://suspicious-link.com/verify
+
+Best regards,
+Amazon Security Team"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- File Upload Tab -->
+                            <div class="tab-content" id="file-tab">
+                                <div class="mb-4">
+                                    <label for="emailFile" class="form-label">Upload Email File</label>
+                                    <div class="file-upload">
+                                        <input type="file" class="form-control" id="emailFile" name="emailFile" 
+                                               accept=".eml,.msg,.txt">
+                                        <label class="file-upload-label" for="emailFile">
+                                            <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                            <div>Drop your email file here or click to browse</div>
+                                            <small class="text-muted">Supported formats: .eml, .msg, .txt</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- URL Scanner Tab -->
+                            <div class="tab-content" id="url-tab">
+                                <div class="mb-4">
+                                    <label for="urlInput" class="form-label">
+                                        <i class="fas fa-link"></i> Suspicious URL
+                                    </label>
+                                    <input type="url" class="form-control" id="urlInput" name="urlInput"
+                                           placeholder="https://suspicious-website.com">
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn">
+                                    <i class="fas fa-search me-2"></i>INITIATE THREAT SCAN
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Section -->
+    <section class="py-5" id="loadingSection" style="display: none;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="glass-card text-center">
+                        <div class="loading"></div>
+                        <h4 class="text-primary mb-3">ANALYZING THREAT PATTERNS...</h4>
+                        <p class="text-muted mb-4">Deploying neural network algorithms</p>
+                        <div class="terminal-output">
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">root@phishsleuth:~#</span> Initializing threat detection modules...
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">root@phishsleuth:~#</span> Loading NLP models... <span class="text-success">[OK]</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">root@phishsleuth:~#</span> Scanning for malicious patterns... <span class="text-warning">[PROCESSING]</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">root@phishsleuth:~#</span> Cross-referencing threat database... <span class="text-info">[RUNNING]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Results Section -->
+    <section class="py-5" id="results" style="display: none;">
+        <div class="container">
+            <div class="results-container" id="resultsContainer">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="glass-card">
+                            <h3 class="mb-4">
+                                <i class="fas fa-chart-line me-2"></i>THREAT ANALYSIS REPORT
+                            </h3>
+                            
+                            <div class="text-center mb-4">
+                                <div class="threat-score threat-high" id="threatScore">87%</div>
+                                <h4 class="text-danger" id="threatStatus">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    HIGH RISK DETECTED
+                                </h4>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h5>Threat Score</h5>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar bg-danger" role="progressbar" 
+                                             style="width: 87%" id="threatProgress">87%</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Confidence Level</h5>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar bg-info" role="progressbar" 
+                                             style="width: 94%" id="confidenceProgress">94%</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="highlighted-text" id="highlightedContent">
+                                <p><strong>Analyzed Content:</strong><br>
+                                Subject: <span class="highlight-word">URGENT</span>: Your account will be suspended!<br>
+                                From: security@<span class="highlight-word">amaz0n.com</span><br><br>
+                                
+                                Dear Customer,<br><br>
+                                
+                                Your account has been <span class="highlight-word">compromised</span> and will be <span class="highlight-word">suspended in 24 hours</span> unless you verify your information <span class="highlight-word">immediately</span>.<br><br>
+                                
+                                <span class="highlight-word">Click here to verify</span>: <span class="highlight-word">http://suspicious-link.com/verify</span><br><br>
+                                
+                                Best regards,<br>
+                                Amazon Security Team</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="glass-card">
+                            <h4 class="mb-3">
+                                <i class="fas fa-bug me-2"></i>DETECTED THREATS
+                            </h4>
+                            <div class="mt-4" id="detectedThreats">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span><i class="fas fa-exclamation-triangle text-danger"></i> Domain Spoofing</span>
+                                    <span class="badge bg-danger">Critical</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span><i class="fas fa-clock text-warning"></i> Urgency Tactics</span>
+                                    <span class="badge bg-warning">High</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span><i class="fas fa-link text-info"></i> Suspicious Links</span>
+                                    <span class="badge bg-info">Medium</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-mask text-secondary"></i> Social Engineering</span>
+                                    <span class="badge bg-secondary">Low</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card">
+                            <h4 class="mb-3">
+                                <i class="fas fa-shield-alt me-2"></i>RECOMMENDED ACTIONS
+                            </h4>
+                            <ul class="list-unstyled" id="recommendedActions">
+                                <li class="mb-2">
+                                    <i class="fas fa-trash text-danger"></i> 
+                                    Delete this email immediately
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-ban text-warning"></i> 
+                                    Block sender domain
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-flag text-info"></i> 
+                                    Report to security team
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-user-shield text-success"></i> 
+                                    Update security awareness training
+                                </li>
+                            </ul>
+                            <button class="btn btn-danger btn-sm w-100 mt-2" onclick="downloadReport()">
+                                <i class="fas fa-download"></i> DOWNLOAD REPORT
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="py-5 bg-dark" id="stats">
+        <div class="container">
+            <h2 class="text-center mb-5">
+                <i class="fas fa-chart-line me-2"></i>Platform Statistics
+            </h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number" id="emailsAnalyzed">{{ total_scans|default:"1,247,892" }}</div>
+                        <div class="stat-label">Emails Analyzed</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number" id="threatsBlocked">{{ blocked_threats|default:"3,421" }}</div>
+                        <div class="stat-label">Threats Blocked</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number" id="accuracyRate">{{ accuracy_rate|default:"99.7%" }}</div>
+                        <div class="stat-label">Accuracy Rate</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeUsers">15,234</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced History Section -->
+    <section class="py-5" id="history">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="glass-card">
+                        <h2 class="mb-4">
+                            <i class="fas fa-history me-2"></i>RECENT THREAT SCANS
+                        </h2>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Source</th>
+                                        <th>Threat Level</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    {% for scan in recent_scans %}
+                                    <tr>
+                                        <td>{{ scan.created_at|date:"Y-m-d H:i:s" }}</td>
+                                        <td>{{ scan.get_source_display }}</td>
+                                        <td>
+                                            <span class="badge {% if scan.threat_score >= 0.7 %}bg-danger{% elif scan.threat_score >= 0.4 %}bg-warning{% else %}bg-success{% endif %}">
+                                                {{ scan.threat_score|floatformat:0 }}%
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="status-indicator {% if scan.is_phishing %}status-danger{% else %}status-safe{% endif %}"></span>
+                                            {% if scan.is_phishing %}Blocked{% else %}Safe{% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewScanDetails('{{ scan.id }}')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No recent scans available</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced API Section -->
+    <section class="py-5 bg-dark" id="api">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="glass-card">
+                        <h2 class="mb-4">
+                            <i class="fas fa-code me-2"></i>DEVELOPER API ACCESS
+                        </h2>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>API Endpoint</h5>
+                                <div class="terminal">
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">POST</span> {{ request.build_absolute_uri }}{% url 'scanner:analyze_text' %}
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">Authorization:</span> Bearer YOUR_API_KEY
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">Content-Type:</span> application/json
+                                    </div>
+                                    <div class="terminal-line">
+                                        <span class="terminal-prompt">X-CSRFToken:</span> {{ csrf_token }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Example Request</h5>
+                                <div class="terminal">
+                                    <div class="terminal-line">{</div>
+                                    <div class="terminal-line">  "emailSubject": "Urgent action required",</div>
+                                    <div class="terminal-line">  "emailBody": "Your account will be suspended...",</div>
+                                    <div class="terminal-line">  "return_highlights": true</div>
+                                    <div class="terminal-line">}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="terminal">
+                            <div class="terminal-line"># Enhanced PhishSleuth API Usage</div>
+                            <div class="terminal-line">curl -X POST {{ request.build_absolute_uri }}{% url 'scanner:analyze_text' %} \</div>
+                            <div class="terminal-line">  -H "Content-Type: application/json" \</div>
+                            <div class="terminal-line">  -H "X-CSRFToken: {{ csrf_token }}" \</div>
+                            <div class="terminal-line">  -d '{</div>
+                            <div class="terminal-line">    "emailSubject": "Urgent: Verify Account",</div>
+                            <div class="terminal-line">    "emailBody": "Click here to verify...",</div>
+                            <div class="terminal-line">    "return_highlights": true</div>
+                            <div class="terminal-line">  }'</div>
+                            <div class="terminal-line"></div>
+                            <div class="terminal-line"># Enhanced Response</div>
+                            <div class="terminal-line">{</div>
+                            <div class="terminal-line">  "threat_score": 0.89,</div>
+                            <div class="terminal-line">  "is_phishing": true,</div>
+                            <div class="terminal-line">  "risk_factors": ["urgency", "suspicious_links", "domain_spoofing"],</div>
+                            <div class="terminal-line">  "confidence": 0.94,</div>
+                            <div class="terminal-line">  "recommendations": ["block_sender", "report_threat"]</div>
+                            <div class="terminal-line">}</div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-primary" onclick="showNotification('API key generation feature coming soon!', 'info')">
+                                <i class="fas fa-key"></i> GET API KEY
+                            </button>
+                            <button class="btn btn-outline-secondary ms-2">
+                                <i class="fas fa-book"></i> VIEW DOCUMENTATION
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="scrollToTop()" title="Back to Top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="py-3 bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">
+                        <i class="fas fa-shield-alt text-primary"></i>
+                        PhishSleuth Elite Edition v2.1.0
+                    </p>
+                    <small class="text-muted">Advanced AI-Powered Threat Detection</small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="d-inline-block me-3">
+                        <span class="status-indicator status-safe"></span>
+                        <small>System Status: <span class="text-success">OPERATIONAL</span></small>
+                    </div>
+                    <div class="d-inline-block">
+                        <small class="text-muted">Uptime: 99.97%</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Django Messages Framework -->
+    {% if messages %}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        {% for message in messages %}
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="fas fa-info-circle text-primary me-2"></i>
+                <strong class="me-auto">PhishSleuth</strong>
+                <small>{{ message.tags }}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</body>
+</html>
