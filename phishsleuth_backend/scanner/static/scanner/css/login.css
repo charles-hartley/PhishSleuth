@@ -1,0 +1,428 @@
+/* Auth container and card styles */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-card {
+    background: rgba(0, 20, 0, 0.9);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 40px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 255, 65, 0.2);
+    max-width: 450px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    animation: authCardGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes authCardGlow {
+    0% { 
+        box-shadow: 0 8px 32px rgba(0, 255, 65, 0.2);
+        border-color: var(--glass-border);
+    }
+    100% { 
+        box-shadow: 0 15px 50px rgba(0, 255, 65, 0.4);
+        border-color: rgba(0, 255, 65, 0.3);
+    }
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+    animation: authScanLine 3s linear infinite;
+}
+
+@keyframes authScanLine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Auth header styles */
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    text-shadow: 0 0 20px var(--neon-green);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.auth-logo i {
+    margin-right: 10px;
+    animation: shieldPulse 2s ease-in-out infinite;
+}
+
+@keyframes shieldPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.auth-subtitle {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.8;
+}
+
+/* Form styling */
+.form-floating {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.form-floating .form-control {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    padding: 15px 12px 15px 45px;
+    height: auto;
+    transition: all 0.3s ease;
+}
+
+.form-floating .form-control:focus {
+    background: rgba(0, 0, 0, 0.95);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    color: var(--text-primary);
+    outline: none;
+}
+
+.form-floating .form-control::placeholder {
+    color: transparent;
+}
+
+.form-floating label {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.form-floating .form-control:focus ~ label,
+.form-floating .form-control:not(:placeholder-shown) ~ label {
+    top: -8px;
+    left: 8px;
+    font-size: 12px;
+    color: var(--neon-green);
+    background: rgba(0, 20, 0, 0.9);
+    padding: 0 8px;
+    border-radius: 3px;
+}
+
+.form-floating label i {
+    margin-right: 8px;
+    color: var(--neon-blue);
+}
+
+/* Remember me and forgot password */
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+}
+
+.form-check-input {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--glass-border);
+    border-radius: 3px;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-check-input:checked {
+    background: var(--neon-green);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.form-check-input:focus {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.form-check-label {
+    color: var(--text-secondary);
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.auth-link {
+    color: var(--neon-blue);
+    text-decoration: none;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.auth-link:hover {
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+    text-decoration: none;
+}
+
+/* Auth button */
+.btn-auth {
+    background: linear-gradient(135deg, var(--neon-green), #00cc33);
+    border: 1px solid var(--neon-green);
+    color: #000;
+    font-family: 'Fira Code', monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.btn-auth::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-auth:hover::before {
+    left: 100%;
+}
+
+.btn-auth:hover {
+    background: linear-gradient(135deg, #00cc33, var(--neon-green));
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.6);
+    transform: translateY(-2px);
+    color: #000;
+}
+
+.btn-auth:disabled {
+    opacity: 0.7;
+    transform: none;
+    cursor: not-allowed;
+}
+
+.btn-auth .loading-spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid #000;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Auth divider */
+.auth-divider {
+    text-align: center;
+    margin: 30px 0;
+    position: relative;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+}
+
+.auth-divider span {
+    background: rgba(0, 20, 0, 0.9);
+    color: var(--text-muted);
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Security notice */
+.security-notice {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 25px;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.security-notice i {
+    color: var(--neon-green);
+    margin-right: 8px;
+}
+
+.security-notice strong {
+    color: var(--text-primary);
+}
+
+/* Alert styles */
+.alert-custom {
+    background: rgba(255, 7, 58, 0.1);
+    border: 1px solid var(--neon-red);
+    border-radius: 8px;
+    color: var(--neon-red);
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    margin-bottom: 20px;
+    padding: 12px 15px;
+}
+
+.alert-custom i {
+    color: var(--neon-red);
+    margin-right: 8px;
+}
+
+/* Matrix drops for auth pages */
+.matrix-drop {
+    position: absolute;
+    color: var(--neon-green);
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    text-shadow: 0 0 8px var(--neon-green);
+    animation: matrixDrop 4s linear infinite;
+    opacity: 0.6;
+    user-select: none;
+    pointer-events: none;
+}
+
+@keyframes matrixDrop {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+/* Responsive design for auth pages */
+@media (max-width: 576px) {
+    .auth-card {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .auth-logo {
+        font-size: 2rem;
+    }
+    
+    .auth-subtitle {
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+    
+    .remember-forgot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .form-floating .form-control {
+        padding: 12px 10px 12px 40px;
+    }
+}
+
+/* Additional cyberpunk effects for auth */
+.auth-card:hover {
+    animation-play-state: paused;
+    box-shadow: 0 20px 60px rgba(0, 255, 65, 0.5);
+    border-color: rgba(0, 255, 65, 0.4);
+}
+
+/* Glitch effect for critical states */
+.form-control.error {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 20px rgba(255, 7, 58, 0.3);
+    animation: inputGlitch 0.3s ease-in-out;
+}
+
+@keyframes inputGlitch {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+/* Success state for inputs */
+.form-control.success {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+/* Enhanced focus states */
+.form-floating:focus-within {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
+}
+
+.form-floating:focus-within .form-control {
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.4);
+}

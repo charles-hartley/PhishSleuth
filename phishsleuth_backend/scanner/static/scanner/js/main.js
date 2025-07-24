@@ -670,11 +670,13 @@ function scrollToScanner() {
     document.getElementById('scanner').scrollIntoView({ behavior: 'smooth' });
 }
 
+
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showDemo() {
+    document.getElementById('scanner').scrollIntoView({ behavior: 'smooth' });
     showNotification('Demo mode activated - Try analyzing the sample text!', 'info');
     
     // Fill in demo data

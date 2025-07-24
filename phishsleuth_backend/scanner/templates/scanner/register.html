@@ -1,0 +1,444 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - PhishSleuth</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    
+    <!-- External CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@300;400;500&family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="{% static 'scanner/css/register.css' %}">
+    
+    <!-- External JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation"></div>
+    <div class="matrix-bg">
+        <div class="matrix-rain" id="matrixRain"></div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-shield-alt me-2"></i>PhishSleuth
+                </div>
+                <div class="auth-subtitle">SECURE ACCOUNT CREATION</div>
+            </div>
+
+            {% if form.errors %}
+            <div class="alert alert-custom" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Registration Failed:</strong><br>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <div class="mt-1">{{ error }}</div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert {% if message.level_tag == 'success' %}alert-success-custom{% else %}alert-custom{% endif %}" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>{{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" id="registerForm">
+                {% csrf_token %}
+                
+                <div class="row row-cols-1 row-cols-md-2">
+                    <div class="col">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="id_first_name" name="first_name" 
+                                   placeholder="First Name" required value="{{ form.first_name.value|default:'' }}">
+                            <label for="id_first_name">
+                                <i class="fas fa-user me-2"></i>First Name
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="id_last_name" name="last_name" 
+                                   placeholder="Last Name" required value="{{ form.last_name.value|default:'' }}">
+                            <label for="id_last_name">
+                                <i class="fas fa-user me-2"></i>Last Name
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="id_username" name="username" 
+                           placeholder="Username" required value="{{ form.username.value|default:'' }}">
+                    <label for="id_username">
+                        <i class="fas fa-user-tag me-2"></i>Username
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="email" class="form-control" id="id_email" name="email" 
+                           placeholder="Email" required value="{{ form.email.value|default:'' }}">
+                    <label for="id_email">
+                        <i class="fas fa-envelope me-2"></i>Email Address
+                    </label>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="id_password1" name="password1" 
+                           placeholder="Password" required>
+                    <label for="id_password1">
+                        <i class="fas fa-lock me-2"></i>Password
+                    </label>
+                    <div class="password-strength">
+                        <div class="password-strength-fill" id="passwordStrengthFill"></div>
+                    </div>
+                </div>
+
+                <div class="password-requirements" id="passwordRequirements">
+                    <div class="requirement" id="req-length">
+                        <i class="fas fa-times"></i>
+                        At least 8 characters long
+                    </div>
+                    <div class="requirement" id="req-uppercase">
+                        <i class="fas fa-times"></i>
+                        Contains uppercase letter
+                    </div>
+                    <div class="requirement" id="req-lowercase">
+                        <i class="fas fa-times"></i>
+                        Contains lowercase letter
+                    </div>
+                    <div class="requirement" id="req-number">
+                        <i class="fas fa-times"></i>
+                        Contains number
+                    </div>
+                    <div class="requirement" id="req-special">
+                        <i class="fas fa-times"></i>
+                        Contains special character (!@#$%^&*)
+                    </div>
+                </div>
+
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="id_password2" name="password2" 
+                           placeholder="Confirm Password" required>
+                    <label for="id_password2">
+                        <i class="fas fa-lock me-2"></i>Confirm Password
+                    </label>
+                </div>
+
+                <div class="terms-agreement">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="agree_terms" name="agree_terms" required>
+                        <label class="form-check-label" for="agree_terms">
+                            I agree to the <a href="#" class="auth-link">Terms of Service</a> and 
+                            <a href="#" class="auth-link">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="security_updates" name="security_updates">
+                        <label class="form-check-label" for="security_updates">
+                            Subscribe to security updates and threat intelligence reports
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-auth w-100 mb-3" id="registerBtn">
+                    <span class="btn-text">
+                        <i class="fas fa-user-plus me-2"></i>CREATE SECURE ACCOUNT
+                    </span>
+                    <div class="loading-spinner"></div>
+                </button>
+
+                <div class="auth-divider">
+                    <span>ALREADY HAVE ACCESS?</span>
+                </div>
+
+                <div class="text-center">
+                    <p class="mb-0">
+                        <span class="text-muted">Already registered? </span>
+                        <a href="{% url 'login' %}" class="auth-link">
+                            <i class="fas fa-sign-in-alt me-1"></i>Sign In
+                        </a>
+                    </p>
+                </div>
+
+                <div class="password-requirements mt-3">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Security Features:</strong>
+                    <ul class="mt-2 mb-0" style="padding-left: 1.5rem;">
+                        <li>End-to-end encryption for all data</li>
+                        <li>Multi-factor authentication available</li>
+                        <li>Advanced threat monitoring</li>
+                        <li>Zero-knowledge architecture</li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced password validation
+        const passwordInput = document.getElementById('id_password1');
+        const confirmPasswordInput = document.getElementById('id_password2');
+        const strengthFill = document.getElementById('passwordStrengthFill');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        const requirements = {
+            length: { element: document.getElementById('req-length'), regex: /.{8,}/ },
+            uppercase: { element: document.getElementById('req-uppercase'), regex: /[A-Z]/ },
+            lowercase: { element: document.getElementById('req-lowercase'), regex: /[a-z]/ },
+            number: { element: document.getElementById('req-number'), regex: /[0-9]/ },
+            special: { element: document.getElementById('req-special'), regex: /[!@#$%^&*(),.?":{}|<>]/ }
+        };
+
+        function validatePassword(password) {
+            let score = 0;
+            let validCount = 0;
+
+            Object.keys(requirements).forEach(key => {
+                const req = requirements[key];
+                const isValid = req.regex.test(password);
+                
+                if (isValid) {
+                    req.element.classList.remove('invalid');
+                    req.element.classList.add('valid');
+                    req.element.querySelector('i').className = 'fas fa-check';
+                    validCount++;
+                    score += 20;
+                } else {
+                    req.element.classList.remove('valid');
+                    req.element.classList.add('invalid');
+                    req.element.querySelector('i').className = 'fas fa-times';
+                }
+            });
+
+            // Update strength bar
+            strengthFill.style.width = `${Math.min(score, 100)}%`;
+            
+            if (score < 40) {
+                strengthFill.className = 'password-strength-fill strength-weak';
+            } else if (score < 60) {
+                strengthFill.className = 'password-strength-fill strength-fair';
+            } else if (score < 80) {
+                strengthFill.className = 'password-strength-fill strength-good';
+            } else {
+                strengthFill.className = 'password-strength-fill strength-strong';
+            }
+
+            return validCount === 5;
+        }
+
+        function validatePasswordMatch() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                confirmPasswordInput.setCustomValidity("Passwords don't match");
+                confirmPasswordInput.style.borderColor = '#f85149';
+                return false;
+            } else {
+                confirmPasswordInput.setCustomValidity('');
+                confirmPasswordInput.style.borderColor = '';
+                return true;
+            }
+        }
+
+        passwordInput.addEventListener('input', function() {
+            validatePassword(this.value);
+            if (confirmPasswordInput.value) {
+                validatePasswordMatch();
+            }
+        });
+
+        confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+
+        // Enhanced form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const password = passwordInput.value;
+            const isPasswordValid = validatePassword(password);
+            const isPasswordMatch = validatePasswordMatch();
+            
+            if (!isPasswordValid) {
+                e.preventDefault();
+                showNotification('Please ensure your password meets all requirements', 'error');
+                return;
+            }
+            
+            if (!isPasswordMatch) {
+                e.preventDefault();
+                showNotification('Password confirmation does not match', 'error');
+                return;
+            }
+
+            const btn = registerBtn;
+            const btnText = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.loading-spinner');
+            
+            // Show loading state
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            btn.disabled = true;
+            
+            // Optional: Add timeout to reset if needed
+            setTimeout(() => {
+                if (btn.disabled) {
+                    btnText.style.display = 'inline';
+                    spinner.style.display = 'none';
+                    btn.disabled = false;
+                }
+            }, 15000);
+        });
+
+        // Enhanced input focus effects
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Username availability check (optional)
+        const usernameInput = document.getElementById('id_username');
+        let usernameTimeout;
+        
+        usernameInput.addEventListener('input', function() {
+            clearTimeout(usernameTimeout);
+            const username = this.value.trim();
+            
+            if (username.length >= 3) {
+                usernameTimeout = setTimeout(() => {
+                    // Optional: Check username availability via AJAX
+                    // This would require a Django view to handle the check
+                    checkUsernameAvailability(username);
+                }, 500);
+            }
+        });
+
+        function checkUsernameAvailability(username) {
+            // Optional implementation for real-time username checking
+            // You would need to create a Django view for this
+            /*
+            fetch('/check-username/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ username: username })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const usernameField = document.getElementById('id_username');
+                if (data.available) {
+                    usernameField.style.borderColor = '#40c463';
+                } else {
+                    usernameField.style.borderColor = '#f85149';
+                }
+            });
+            */
+        }
+
+        // Email validation enhancement
+        const emailInput = document.getElementById('id_email');
+        emailInput.addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                this.style.borderColor = '#f85149';
+                showNotification('Please enter a valid email address', 'warning');
+            } else {
+                this.style.borderColor = '';
+            }
+        });
+
+        // Matrix rain effect
+        function createMatrixRain() {
+            const matrixContainer = document.getElementById('matrixRain');
+            if (!matrixContainer) return;
+            
+            const chars = '01PhishSleuth';
+            const columns = Math.floor(window.innerWidth / 20);
+            
+            for (let i = 0; i < columns; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'matrix-drop';
+                drop.style.left = `${i * 20}px`;
+                drop.style.animationDelay = `${Math.random() * 2}s`;
+                drop.textContent = chars[Math.floor(Math.random() * chars.length)];
+                matrixContainer.appendChild(drop);
+            }
+        }
+
+        // Simple notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'error' ? 'custom' : type === 'warning' ? 'custom' : 'success-custom'} position-fixed`;
+            notification.style.cssText = `
+                top: 20px; 
+                right: 20px; 
+                z-index: 9999; 
+                min-width: 300px;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-triangle' : 'check-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close float-end" onclick="this.parentElement.remove()"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        // Initialize matrix effect
+        createMatrixRain();
+
+        // Add some cyber effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add glitch effect to logo periodically
+            setInterval(() => {
+                const logo = document.querySelector('.auth-logo');
+                if (logo && Math.random() < 0.1) {
+                    logo.style.textShadow = '2px 0 #ff0000, -2px 0 #00ffff';
+                    setTimeout(() => {
+                        logo.style.textShadow = 'none';
+                    }, 100);
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,486 @@
+/* Two-column layout for name fields */
+.row.row-cols-1.row-cols-md-2 {
+    margin-bottom: 0;
+}
+
+.row.row-cols-1.row-cols-md-2 .col {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.row.row-cols-1.row-cols-md-2 .col:first-child {
+    padding-right: 10px;
+}
+
+.row.row-cols-1.row-cols-md-2 .col:last-child {
+    padding-left: 10px;
+}
+
+@media (max-width: 768px) {
+    .row.row-cols-1.row-cols-md-2 .col:first-child,
+    .row.row-cols-1.row-cols-md-2 .col:last-child {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+/* Password strength indicator */
+.password-strength {
+    position: absolute;
+    bottom: -3px;
+    left: 1px;
+    right: 1px;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+}
+
+.password-strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.password-strength-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: strengthShine 2s linear infinite;
+}
+
+@keyframes strengthShine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.strength-weak {
+    background: linear-gradient(90deg, var(--neon-red), #ff4444);
+}
+
+.strength-fair {
+    background: linear-gradient(90deg, var(--neon-orange), #ffaa44);
+}
+
+.strength-good {
+    background: linear-gradient(90deg, var(--neon-yellow), #ffff44);
+}
+
+.strength-strong {
+    background: linear-gradient(90deg, var(--neon-green), #44ff44);
+}
+
+/* Password requirements list */
+.password-requirements {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+}
+
+.password-requirements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.password-requirements ul li {
+    padding: 2px 0;
+    color: var(--text-secondary);
+}
+
+.requirement {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.requirement:last-child {
+    margin-bottom: 0;
+}
+
+.requirement i {
+    margin-right: 10px;
+    width: 14px;
+    font-size: 12px;
+    color: var(--neon-red);
+    transition: all 0.3s ease;
+}
+
+.requirement.valid {
+    color: var(--neon-green);
+    opacity: 1;
+    transform: translateX(5px);
+}
+
+.requirement.valid i {
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+}
+
+.requirement.invalid {
+    color: var(--neon-red);
+    opacity: 0.8;
+}
+
+.requirement.invalid i {
+    color: var(--neon-red);
+}
+
+/* Terms agreement section */
+.terms-agreement {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.terms-agreement .form-check {
+    margin-bottom: 15px;
+}
+
+.terms-agreement .form-check:last-child {
+    margin-bottom: 0;
+}
+
+.terms-agreement .form-check-label {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.terms-agreement .auth-link {
+    color: var(--neon-blue);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.terms-agreement .auth-link:hover {
+    color: var(--neon-green);
+    text-decoration-color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+}
+
+/* Enhanced form validation styles */
+.form-control:invalid:not(:placeholder-shown) {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 15px rgba(255, 7, 58, 0.3);
+}
+
+.form-control:valid:not(:placeholder-shown) {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+/* Enhanced alert styles for registration */
+.alert-success-custom {
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid var(--neon-green);
+    border-radius: 8px;
+    color: var(--neon-green);
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    margin-bottom: 20px;
+    padding: 12px 15px;
+    animation: alertGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes alertGlow {
+    0% { box-shadow: 0 0 10px rgba(0, 255, 65, 0.3); }
+    100% { box-shadow: 0 0 20px rgba(0, 255, 65, 0.5); }
+}
+
+.alert-success-custom i {
+    color: var(--neon-green);
+    margin-right: 8px;
+}
+
+/* Registration card adjustments */
+.auth-card {
+    max-width: 500px; /* Slightly wider for registration form */
+}
+
+/* Enhanced button states for registration */
+.btn-auth:disabled {
+    background: linear-gradient(135deg, #333, #555);
+    border-color: #555;
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Username availability indicator */
+.username-status {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    z-index: 2;
+}
+
+.username-available {
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+}
+
+.username-taken {
+    color: var(--neon-red);
+    text-shadow: 0 0 10px var(--neon-red);
+}
+
+.username-checking {
+    color: var(--neon-blue);
+    animation: pulse 1s ease-in-out infinite;
+}
+
+/* Email validation styling */
+.form-floating:has(.form-control[type="email"]:invalid:not(:placeholder-shown)) label {
+    color: var(--neon-red);
+}
+
+.form-floating:has(.form-control[type="email"]:valid:not(:placeholder-shown)) label {
+    color: var(--neon-green);
+}
+
+/* Password match validation */
+.form-floating:has(.form-control[name="password2"]:invalid) {
+    position: relative;
+}
+
+.form-floating:has(.form-control[name="password2"]:invalid)::after {
+    content: 'Passwords do not match';
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    color: var(--neon-red);
+    font-size: 11px;
+    font-family: 'Fira Code', monospace;
+}
+
+/* Registration progress indicator */
+.registration-progress {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+.progress-step {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-muted);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    background: rgba(0, 255, 65, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+.progress-step.completed {
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+    background: rgba(0, 217, 255, 0.1);
+}
+
+.progress-step::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: calc(100vw / 3 - 60px);
+    height: 2px;
+    background: var(--glass-border);
+    z-index: -1;
+}
+
+.progress-step:last-child::before {
+    display: none;
+}
+
+.progress-step.completed::before {
+    background: var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+/* Enhanced security features section */
+.password-requirements:has(strong) {
+    border-color: rgba(0, 255, 65, 0.3);
+    background: rgba(0, 255, 65, 0.05);
+}
+
+.password-requirements strong {
+    color: var(--neon-green);
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.password-requirements strong i {
+    margin-right: 8px;
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+}
+
+/* Notification system for registration */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 350px;
+    z-index: 9999;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.error {
+    background: rgba(255, 7, 58, 0.1);
+    border: 1px solid var(--neon-red);
+    color: var(--neon-red);
+}
+
+.notification.success {
+    background: rgba(0, 255, 65, 0.1);
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+}
+
+.notification.warning {
+    background: rgba(255, 140, 0, 0.1);
+    border: 1px solid var(--neon-orange);
+    color: var(--neon-orange);
+}
+
+.notification .btn-close {
+    background: none;
+    border: none;
+    color: inherit;
+    opacity: 0.7;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.notification .btn-close:hover {
+    opacity: 1;
+}
+
+/* Advanced form interactions */
+.form-floating:focus-within {
+    z-index: 2;
+}
+
+.form-floating:focus-within .form-control {
+    transform: scale(1.02);
+}
+
+/* Responsive enhancements for registration */
+@media (max-width: 576px) {
+    .terms-agreement {
+        padding: 15px;
+    }
+    
+    .password-requirements {
+        padding: 12px;
+        font-size: 11px;
+    }
+    
+    .requirement {
+        margin-bottom: 6px;
+    }
+    
+    .requirement i {
+        margin-right: 8px;
+        font-size: 10px;
+    }
+    
+    .auth-card {
+        max-width: 100%;
+    }
+    
+    .notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}
+
+/* Loading state enhancements */
+.btn-auth .btn-text {
+    transition: all 0.3s ease;
+}
+
+.btn-auth .loading-spinner {
+    margin: 0 auto;
+}
+
+/* Enhanced matrix effect for registration */
+.matrix-rain.registration {
+    opacity: 0.3;
+}
+
+.matrix-drop.registration {
+    font-size: 10px;
+    animation-duration: 6s;
+}
+
+/* Form field icons enhancement */
+.form-floating label i {
+    position: relative;
+    z-index: 1;
+}
+
+.form-floating:focus-within label i {
+    color: var(--neon-green);
+    text-shadow: 0 0 10px var(--neon-green);
+    animation: iconPulse 0.5s ease-out;
+}
+
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}

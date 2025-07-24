@@ -1,12 +1,17 @@
 asgiref==3.9.1
+Brotli==1.1.0
 certifi==2025.7.9
 charset-normalizer==3.4.2
+click==8.2.1
+dj-database-url==3.0.1
 Django==5.2.4
 djangorestframework==3.16.0
 dnspython==2.7.0
 email_validator==2.2.0
 filelock==3.18.0
 fsspec==2025.5.1
+gunicorn==23.0.0
+h11==0.16.0
 hf-xet==1.1.5
 huggingface-hub==0.33.4
 idna==3.10
@@ -31,6 +36,7 @@ nvidia-nccl-cu12==2.26.2
 nvidia-nvjitlink-cu12==12.6.85
 nvidia-nvtx-cu12==12.6.77
 packaging==25.0
+psycopg2-binary==2.9.10
 python-dateutil==2.9.0.post0
 python-magic==0.4.27
 python-whois==0.9.5
@@ -51,3 +57,5 @@ transformers==4.53.2
 triton==3.3.1
 typing_extensions==4.14.1
 urllib3==2.5.0
+uvicorn==0.35.0
+whitenoise==6.9.0
