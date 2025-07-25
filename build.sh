@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
-set -o errexit
+# build.sh
 
-pip install -r requirements.txt
+# Navigate to the Django project directory
+cd phishsleuth_backend
 
-python manage.py collectstatic --no-input
+# Install dependencies
+pip install -r ../requirements.txt
 
+# Run Django commands
+python manage.py collectstatic --noinput
 python manage.py migrate
