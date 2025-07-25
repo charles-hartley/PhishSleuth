@@ -1,16 +1,29 @@
 services:
   - type: web
     plan: free
-    name: mysite
+    name: phishsleuth-backend
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'python -m gunicorn mysite.asgi:application -k uvicorn.workers.UvicornWorker'
+    startCommand: 'cd phishsleuth_backend && python -m gunicorn phishsleuth_backend.wsgi:application --bind 0.0.0.0:$PORT'
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: mysitedb
+          name: phishsleuth-db
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
       - key: WEB_CONCURRENCY
         value: 4
+      - key: DJANGO_SETTINGS_MODULE
+        value: phishsleuth_backend.settings
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*" # Update this to your domain in production
+
+# Database configuration (PostgreSQL recommended for production)
+databases:
+  - name: phishsleuth-db
+    databaseName: phishsleuth
+    user: phishsleuth_user
+    plan: free
